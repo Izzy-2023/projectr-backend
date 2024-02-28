@@ -1,4 +1,5 @@
-// routes/tasks
+// backend/routes/tasks.js
+// routes/tasks.js
 const express = require('express')
 const router = express.Router()
 const Task = require('../models/Task')
@@ -13,47 +14,66 @@ router.get('/', async (req, res) => {
   }
 })
 
-// show single task's details
+// GET a single task
 router.get('/:id', async (req, res) => {
   try {
-    const tasks = await Task.find({ _id: req.params.id })
-    res.json(tasks)
+    const task = await Task.findById(req.params.id)
+    if (task) {
+      res.json(task)
+    } else {
+      res.status(404).json({ message: 'Task not found' })
+    }
   } catch (err) {
     res.status(500).json({ message: err.message })
   }
 })
 
 // POST create a new task
-
 router.post('/', async (req, res) => {
   try {
-    res.json(await Task.create(req.body))
+    const { description, priority, status } = req.body
+    const newTask = new Task({
+      description,
+      priority,
+      status
+    })
+    const savedTask = await newTask.save()
+    res.status(201).json(savedTask)
   } catch (err) {
-    res.status(400).json(err)
+    res.status(400).json({ message: err.message })
   }
 })
 
 // PUT update a task
 router.put('/:id', async (req, res) => {
   try {
-    res.json(await People.findByIdAndUpdate(req.params.id, req.body))
+    const { description, priority, status } = req.body
+    const updatedTask = await Task.findByIdAndUpdate(req.params.id, {
+      description,
+      priority,
+      status
+    }, { new: true })
+    if (updatedTask) {
+      res.json(updatedTask)
+    } else {
+      res.status(404).json({ message: 'Task not found' })
+    }
   } catch (err) {
-    res.status(400).json(err)
+    res.status(400).json({ message: err.message })
   }
 })
 
 // DELETE a task
 router.delete('/:id', async (req, res) => {
   try {
-    const targetTask = await Task.findById(req.params.id)
-    if (targetTask) {
-      const deletedTask = await Task.findByIdAndDelete(req.params.id)
-      res.json({ deletedTask, message: 'Task deleted' })
+    const deletedTask = await Task.findByIdAndDelete(req.params.id)
+    if (deletedTask) {
+      res.json({ message: 'Task deleted', deletedTask })
     } else {
-      res.json({ message: 'Task not found' })
+      res.status(404).json({ message: 'Task not found' })
     }
   } catch (err) {
-    res.status(400).json(err)
+    res.status(400).json({ message: err.message })
   }
 })
 
