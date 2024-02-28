@@ -3,19 +3,16 @@ const { Schema, model } = mongoose
 
 const taskSchema = new Schema({
   project: { type: String, required: true },
-  username: { type: String, required: true },
+  projectId: { type: String, required: true },
+  username: { type: String },
   task: { type: String },
-  status: '',
-  // { type: String },
-  category: 'none',
-  // { type: String },
-  guests: 'none',
-  // [{ type: String }],
-  priority: { type: Number },
-  assigned_to: 'none',
-  // { type: String },
-  department: 'default',
-  created_on: { type: Date },
+  status: { type: String },
+  category: { type: String },
+  guests: [{ type: String }],
+  priority: { type: String },
+  assigned_to: { type: String },
+  department: { type: String },
+  created_on: { type: Date, value: Date.now() },
   finished_on: { type: Date }
 })
 
